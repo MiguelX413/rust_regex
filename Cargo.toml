@@ -9,4 +9,5 @@ name = "rust_regex"
 crate-type = ["cdylib"]
 
 [dependencies]
+regex = { version = "1.5.6" }
 pyo3 = { version = "0.16.5", features = ["extension-module", "abi3-py37"] }
