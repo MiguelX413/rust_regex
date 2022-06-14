@@ -1,0 +1,12 @@
+[package]
+name = "rust_regex"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "rust_regex"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.16.5", features = ["extension-module", "abi3-py37"] }
