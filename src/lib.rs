@@ -1,7 +1,10 @@
 use crate::RegexFlag::ASCII;
-use pyo3::exceptions::PyValueError;
+use pyo3::create_exception;
+use pyo3::exceptions::{PyException, PyTypeError};
 use pyo3::prelude::*;
 use regex::Regex;
+
+create_exception!(rust_regex, error, PyException);
 
 #[pyclass]
 struct Pattern {
@@ -15,6 +18,14 @@ impl Pattern {
             .find_iter(string)
             .map(|f| f.as_str().to_string())
             .collect::<Vec<String>>()
+    }
+}
+
+impl Clone for Pattern {
+    fn clone(&self) -> Self {
+        Pattern {
+            pattern: self.pattern.clone(),
+        }
     }
 }
 
@@ -51,18 +62,31 @@ impl RegexFlag {
     const T: RegexFlag = RegexFlag::TEMPLATE;
 }
 
-/// Formats the sum of two numbers as string.
 #[pyfunction]
-fn compile(a: &str) -> PyResult<Pattern> {
-    match Regex::new(a) {
-        Ok(yeet) => Ok(Pattern { pattern: yeet }),
-        Err(_) => Err(PyValueError::new_err("Lmao")),
+fn compile(pattern: &PyAny) -> PyResult<Pattern> {
+    match pattern.extract::<&str>() {
+        Ok(pattern) => match Regex::new(pattern) {
+            Ok(pattern) => Ok(Pattern { pattern }),
+            Err(err) => Err(error::new_err(err.to_string())),
+        },
+        Err(_) => match pattern.extract::<Pattern>() {
+            Ok(pattern) => Ok(pattern),
+            Err(_) => Err(PyTypeError::new_err(
+                "first argument must be string or compiled pattern",
+            )),
+        },
     }
+}
+
+#[pyfunction]
+fn findall(pattern: &PyAny, string: &str) -> PyResult<Vec<String>> {
+    Ok(compile(pattern)?.findall(string))
 }
 
 /// A Python module implemented in Rust.
 #[pymodule]
 fn rust_regex(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add("error", _py.get_type::<error>())?;
     m.add_function(wrap_pyfunction!(compile, m)?)?;
     m.add_class::<Pattern>()?;
     m.add_class::<RegexFlag>()?;
