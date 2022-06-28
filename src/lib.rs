@@ -1,4 +1,3 @@
-use crate::RegexFlag::ASCII;
 use pyo3::create_exception;
 use pyo3::exceptions::{PyException, PyTypeError};
 use pyo3::prelude::*;
@@ -45,7 +44,7 @@ enum RegexFlag {
 #[pymethods]
 impl RegexFlag {
     #[classattr]
-    const A: RegexFlag = ASCII;
+    const A: RegexFlag = RegexFlag::ASCII;
     #[classattr]
     const I: RegexFlag = RegexFlag::IGNORECASE;
     #[classattr]
