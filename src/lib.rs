@@ -84,8 +84,8 @@ fn findall(pattern: &PyAny, string: &str) -> PyResult<Vec<String>> {
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn rust_regex(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add("error", _py.get_type::<error>())?;
+fn rust_regex(py: Python, m: &PyModule) -> PyResult<()> {
+    m.add("error", py.get_type::<error>())?;
     m.add_function(wrap_pyfunction!(compile, m)?)?;
     m.add_class::<Pattern>()?;
     m.add_class::<RegexFlag>()?;
