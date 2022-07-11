@@ -11,34 +11,34 @@ jobs:
         include:
           - target: "x86_64-unknown-linux-gnu"
             pyversion: "3.7"
-            args: "--release -o dist"
+            args: "--release --sdist -o dist"
           - target: "x86_64-unknown-linux-gnu"
             pyversion: "pypy3.7"
-            args: "-i pypy3.7 --release --no-sdist -o dist"
+            args: "-i pypy3.7 --release -o dist"
           - target: "x86_64-unknown-linux-gnu"
             pyversion: "pypy3.8"
-            args: "-i pypy3.8 --release --no-sdist -o dist"
+            args: "-i pypy3.8 --release -o dist"
           - target: "x86_64-unknown-linux-gnu"
             pyversion: "pypy3.9"
-            args: "-i pypy3.9 --release --no-sdist -o dist"
+            args: "-i pypy3.9 --release -o dist"
           - target: "x86_64-unknown-linux-musl"
             pyversion: "3.7"
-            args: "--release --no-sdist -o dist"
+            args: "--release -o dist"
           - target: "i686-unknown-linux-gnu"
             pyversion: "3.7"
-            args: "--release --no-sdist -o dist"
+            args: "--release -o dist"
           - target: "i686-unknown-linux-gnu"
             pyversion: "pypy3.7"
-            args: "-i pypy3.7 --release --no-sdist -o dist"
+            args: "-i pypy3.7 --release -o dist"
           - target: "i686-unknown-linux-gnu"
             pyversion: "pypy3.8"
-            args: "-i pypy3.8 --release --no-sdist -o dist"
+            args: "-i pypy3.8 --release -o dist"
           - target: "i686-unknown-linux-gnu"
             pyversion: "pypy3.9"
-            args: "-i pypy3.9 --release --no-sdist -o dist"
+            args: "-i pypy3.9 --release -o dist"
           - target: "i686-unknown-linux-musl"
             pyversion: "3.7"
-            args: "--release --no-sdist -o dist"
+            args: "--release -o dist"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -52,7 +52,7 @@ jobs:
         args: ${{ matrix.args }}
         target: ${{ matrix.target }}
     - name: Upload wheels
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: wheels
         path: dist
@@ -74,10 +74,10 @@ jobs:
       with:
         manylinux: auto
         command: build
-        args: --release --no-sdist -o dist
+        args: --release -o dist
         target: ${{ matrix.target }}
     - name: Upload wheels
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: wheels
         path: dist
@@ -86,22 +86,23 @@ jobs:
     strategy:
       matrix:
         pyversion: ['3.7']
-        arch: [x64, x86]
-        args: ['--release --no-sdist -o dist']
+        arch: ['x64', 'x86', 'aarch64']
+        args: ['--release -o dist']
         include:
           - pyversion: 'pypy3.7'
-            arch: x64
-            args: '-i pypy3 --release --no-sdist -o dist'
+            arch: 'x64'
+            args: '-i pypy3 --release -o dist'
           - pyversion: 'pypy3.8'
-            arch: x64
-            args: '-i pypy3 --release --no-sdist -o dist'
+            arch: 'x64'
+            args: '-i pypy3 --release -o dist'
           - pyversion: 'pypy3.9'
-            arch: x64
-            args: '-i pypy3 --release --no-sdist -o dist'
+            arch: 'x64'
+            args: '-i pypy3 --release -o dist'
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
+      if: matrix.arch != 'aarch64'
       with:
         python-version: ${{ matrix.pyversion }}
         architecture: ${{ matrix.arch }}
@@ -111,7 +112,7 @@ jobs:
         args: ${{ matrix.args }}
         target: ${{ matrix.arch }}
     - name: Upload wheels
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: wheels
         path: dist
@@ -121,13 +122,13 @@ jobs:
       matrix:
         include:
           - pyversion: "3.7"
-            args: "--release --no-sdist -o dist --universal2"
+            args: "--release -o dist --universal2"
           - pyversion: "pypy3.7"
-            args: "-i pypy3.7 --release --no-sdist -o dist --universal2"
+            args: "-i pypy3.7 --release -o dist --universal2"
           - pyversion: "pypy3.8"
-            args: "-i pypy3.8 --release --no-sdist -o dist --universal2"
+            args: "-i pypy3.8 --release -o dist --universal2"
           - pyversion: "pypy3.9"
-            args: "-i pypy3.9 --release --no-sdist -o dist --universal2"
+            args: "-i pypy3.9 --release -o dist --universal2"
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
@@ -139,7 +140,7 @@ jobs:
         command: build
         args: ${{ matrix.args }}
     - name: Upload wheels
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: wheels
         path: dist
